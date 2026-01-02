@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Menu Admin</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    body{max-width:900px;margin:30px auto;padding:0 14px;font-family:system-ui}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input,select,button{padding:10px;border:1px solid #ccc;border-radius:10px}
+    button{cursor:pointer}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    td,th{border-bottom:1px solid #eee;padding:10px;text-align:left}
+    .danger{background:#ffe5e5}
+    #status{margin:10px 0}
+  </style>
+</head>
+<body>
+  <h2>Menu Admin</h2>
+  <div id="status"></div>
+
+  <h3>Add item</h3>
+  <div class="row">
+    <input id="name" placeholder="Name" />
+    <input id="price" placeholder="Price" type="number" step="0.01" />
+    <select id="category"></select>
+    <button id="add">Add</button>
+  </div>
+
+  <h3>Items</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>Price</th><th>Category</th><th>Available</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="items"></tbody>
+  </table>
+
+  <script src="./admin.js"></script>
+</body>
+</html>

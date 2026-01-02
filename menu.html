@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <title>Menu</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="book-wrap">
+    <header class="topbar">
+      <div>
+        <div id="restName" class="rest-name">Menu</div>
+        <div id="restSub" class="rest-sub">Scan & enjoy</div>
+      </div>
+
+      <div class="nav">
+        <button id="prevBtn" class="btn" aria-label="Previous page">‹</button>
+        <div id="pageIndicator" class="indicator">1 / 1</div>
+        <button id="nextBtn" class="btn" aria-label="Next page">›</button>
+      </div>
+    </header>
+
+    <div id="book" class="book" aria-label="Menu book"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./menu.js"></script>
+
+
+</body>
+</html>
