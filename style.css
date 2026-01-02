@@ -1,27 +1,42 @@
-body {
-  font-family: sans-serif;
-  background: #f5f5f5;
-}
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap");
+
 :root{
-  --bg:#f4f1ea;
+  --bg1:#f4f0e7;
+  --bg2:#e9e2d2;
   --paper:#fffdf7;
-  --ink:#171717;
+  --ink:#141414;
   --muted:#6b7280;
-  --shadow: 0 20px 50px rgba(0,0,0,.15);
+
+  --shadow: 0 20px 55px rgba(0,0,0,.16);
+  --shadow2: 0 10px 28px rgba(0,0,0,.10);
   --radius: 18px;
+
+  --line: rgba(0,0,0,.12);
+  --accent: #111;
 }
 
-*{box-sizing:border-box}
+*{ box-sizing:border-box; }
+
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   color:var(--ink);
-  background: radial-gradient(1200px 600px at 50% -10%, #ffffff 0%, var(--bg) 45%, #e9e4d8 100%);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background:
+    radial-gradient(1000px 500px at 50% -15%, #ffffff 0%, var(--bg1) 45%, var(--bg2) 100%);
+}
+
+/* subtle vignette / premium feel */
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background: radial-gradient(900px 500px at 50% 10%, rgba(0,0,0,0) 60%, rgba(0,0,0,.06) 100%);
 }
 
 .book-wrap{
-  max-width: 920px;
-  margin: 28px auto;
+  max-width: 960px;
+  margin: 26px auto;
   padding: 0 14px 30px;
 }
 
@@ -33,82 +48,230 @@ body{
   margin-bottom:14px;
 }
 
-.rest-name{
-  font-weight:800;
-  font-size: 26px;
-  letter-spacing: .2px;
+.brand{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
 }
-.rest-sub{color:var(--muted); font-size:13px; margin-top:2px}
 
-.nav{display:flex; align-items:center; gap:10px}
+.rest-name{
+  font-family: "Playfair Display", serif;
+  font-weight: 700;
+  font-size: 34px;
+  letter-spacing: .2px;
+  line-height: 1.1;
+}
+
+.rest-sub{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
 .btn{
-  border: 1px solid rgba(0,0,0,.15);
-  background: rgba(255,255,255,.8);
-  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.14);
+  background: rgba(255,255,255,.85);
+  border-radius: 14px;
   padding: 10px 14px;
   font-size: 18px;
   cursor:pointer;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  box-shadow: var(--shadow2);
+  transition: transform 120ms ease, box-shadow 120ms ease;
 }
-.btn:disabled{opacity:.4; cursor:not-allowed}
-.indicator{min-width:64px; text-align:center; color:var(--muted); font-size:13px}
+.btn:active{ transform: translateY(1px); }
+.btn:disabled{ opacity:.35; cursor:not-allowed; }
 
+.indicator{
+  min-width: 80px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* Book area */
 .book{
   position: relative;
   width: 100%;
-  height: min(70vh, 620px);
-  perspective: 2000px;
+  height: min(72vh, 640px);
+  perspective: 2200px;
 }
 
+/* Page */
 .page{
   position:absolute;
   inset:0;
   background: var(--paper);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 22px 22px 18px;
   overflow:auto;
-
-  transform-origin: left center;
-  transform: rotateY(0deg);
-  transition: transform 420ms cubic-bezier(.2,.8,.2,1);
-  backface-visibility: hidden;
+  padding: 26px 26px 18px;
 }
 
-.page .page-title{
+.page:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius: var(--radius);
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+  pointer-events:none;
+}
+
+.page:after{
+  /* left “binding” shadow */
+  content:"";
+  position:absolute;
+  top:0; bottom:0; left:0;
+  width: 44px;
+  border-radius: var(--radius) 0 0 var(--radius);
+  background: linear-gradient(90deg, rgba(0,0,0,.09), rgba(0,0,0,0));
+  pointer-events:none;
+  opacity:.55;
+}
+
+.page.is-hidden{ display:none; }
+
+/* Cover page */
+.cover{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
   text-align:center;
-  font-weight:800;
-  font-size: 20px;
+  padding: 30px;
+}
+.cover .title{
+  font-family: "Playfair Display", serif;
+  font-size: 46px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.cover .subtitle{
+  color:var(--muted);
+  font-size: 14px;
+  margin-bottom: 22px;
+}
+.cover .chip{
+  display:inline-block;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(255,255,255,.6);
+  font-weight:600;
+  font-size:13px;
+}
+
+/* Category title */
+.page-title{
+  text-align:center;
+  font-family: "Playfair Display", serif;
+  font-weight:700;
+  font-size: 22px;
   margin: 6px 0 16px;
 }
 
+/* Menu items */
 .item{
   display:flex;
-  justify-content:space-between;
-  gap:14px;
-  padding: 10px 0;
-  border-bottom: 1px dotted rgba(0,0,0,.18);
+  gap:12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
 }
-.item .left{min-width:0}
-.item .name{font-weight:600}
-.item .desc{color:var(--muted); font-size: 12px; margin-top:4px; line-height:1.2}
-.item .price{white-space:nowrap; font-weight:700}
+.item:last-child{
+  border-bottom: none;
+}
 
-.page .footer{
-  margin-top: 14px;
+.item .left{ min-width:0; flex:1; }
+.item .name{ font-weight:700; letter-spacing:.1px; }
+.item .desc{
+  color:var(--muted);
+  font-size: 12px;
+  margin-top:5px;
+  line-height:1.25;
+}
+
+/* leaders + price */
+.item .right{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  min-width: 110px;
+  justify-content:flex-end;
+}
+.item .dots{
+  flex:1;
+  border-bottom: 1px solid rgba(0,0,0,.18); /* was dotted */
+  transform: translateY(-2px);
+  opacity:.9;
+}
+.item .price{
+  white-space:nowrap;
+  font-weight:800;
+}
+
+.footer{
+  margin-top: 16px;
   text-align:center;
   color:var(--muted);
   font-size: 12px;
 }
 
-/* Flip states */
-.page.is-hidden{display:none}
-.page.is-flipped{
-  transform: rotateY(-180deg);
-}
+/* ---------------------------
+   Mobile improvements
+   --------------------------- */
+@media (max-width: 640px) {
+  .book-wrap{
+    margin: 14px auto;
+    padding: 0 10px 18px;
+  }
 
-/* Mobile */
-@media (max-width: 640px){
-  .topbar{flex-direction:column; align-items:flex-start}
-  .book{height: 75vh}
+  .topbar{
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .rest-name{
+    font-size: 26px;
+  }
+
+  /* Make it feel like ONE continuous page on phones */
+  .book{
+    height: auto !important;
+    perspective: none;
+  }
+
+  .page{
+    position: relative !important;
+    inset: auto !important;
+    overflow: visible !important;
+    padding: 18px 16px 14px;
+    box-shadow: var(--shadow2);
+  }
+
+  .page:after{
+    display:none; /* binding shadow looks weird on small screens */
+  }
+
+  .btn{
+    padding: 9px 12px;
+    font-size: 16px;
+  }
+
+  .indicator{
+    min-width: 64px;
+  }
+
+  /* Slightly tighter item layout on mobile */
+  .item{
+    gap:10px;
+    padding: 10px 0;
+  }
+  .item .right{
+    min-width: 92px;
+    gap:8px;
+  }
 }

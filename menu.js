@@ -1,14 +1,29 @@
 const SUPABASE_URL = "https://qoaxoenapckvltuudmjv.supabase.co";
 const SUPABASE_KEY = "sb_publishable_pwiEDNlv7Rn39PBzEIkOQQ_EeHkfaZF";
 
-const sb = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const slug = new URLSearchParams(location.search).get("slug") || "";
+const slug = new URLSearchParams(location.search).get("slug");
 if (!slug) {
-  document.body.innerHTML = "Missing slug. Use ?slug=pizza-roma";
+  document.getElementById("restName").textContent = "Menu";
+  document.getElementById("restSub").textContent =
+    "Scan the restaurant QR code";
+  document.getElementById("book").innerHTML = `
+    <div class="page cover">
+      <div class="title">QR Menu</div>
+      <div class="subtitle">Open this link with a restaurant code</div>
+      <div class="chip">
+  Please scan the QR code at your table
+</div>
+
+    </div>
+  `;
+  // hide arrows
+  ["prevBtn", "nextBtn", "pageIndicator"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+
   throw new Error("Missing slug");
 }
 
@@ -19,31 +34,34 @@ const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 const pageIndicator = document.getElementById("pageIndicator");
 
-// small status line
-const statusLine = document.createElement("div");
-statusLine.style.margin = "8px 0 14px";
-statusLine.style.color = "#6b7280";
-statusLine.textContent = "Loading menu…";
-document.querySelector(".topbar")?.after(statusLine);
-
 let pages = [];
 let pageIndex = 0;
 
 function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
+  return String(s).replace(
+    /[&<>"']/g,
+    (c) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      }[c])
+  );
 }
 
 function setIndicator() {
-  pageIndicator.innerHTML = pages.map((_, i) =>
-  `<span style="
-    display:inline-block;
-    width:6px;height:6px;
-    border-radius:50%;
-    margin:0 3px;
-    background:${i===pageIndex?'#111':'#ccc'}"></span>`
-).join("");
+  // dots indicator
+  pageIndicator.innerHTML = pages
+    .map(
+      (_, i) =>
+        `<span style="
+      display:inline-block;width:6px;height:6px;border-radius:50%;
+      margin:0 3px;background:${i === pageIndex ? "#111" : "#cfc7b9"}"></span>`
+    )
+    .join("");
+
   prevBtn.disabled = pageIndex <= 0;
   nextBtn.disabled = pageIndex >= pages.length - 1;
 }
@@ -55,22 +73,43 @@ function showPage(i) {
   setIndicator();
 }
 
-function buildPage(category, items) {
+function buildCover(restaurant) {
+  const page = document.createElement("div");
+  page.className = "page cover is-hidden";
+  page.innerHTML = `
+    <div class="title">${escapeHtml(restaurant.name || "Menu")}</div>
+    <div class="subtitle">Welcome — swipe or use arrows to browse</div>
+    <div class="chip">Today’s Menu</div>
+  `;
+  return page;
+}
+
+function buildCategoryPage(category, items) {
   const page = document.createElement("div");
   page.className = "page is-hidden";
 
-  const list = items.map(it => {
-    const desc = (it.description || "").trim();
-    return `
+  const list = items
+    .map((it) => {
+      const desc = (it.description || "").trim();
+      return `
       <div class="item">
         <div class="left">
           <div class="name">${escapeHtml(it.name)}</div>
-          ${desc ? `<div class="desc">${escapeHtml(desc)}</div>` : ""}
+       ${
+         it.description
+           ? `<div class="desc">${escapeHtml(it.description)}</div>`
+           : ""
+       }
+
         </div>
-        <div class="price">$ ${Number(it.price ?? 0).toFixed(2)}</div>
+        <div class="right">
+          <div class="dots"></div>
+          <div class="price">€${Number(it.price ?? 0).toFixed(2)}</div>
+        </div>
       </div>
     `;
-  }).join("");
+    })
+    .join("");
 
   page.innerHTML = `
     <div class="page-title">${escapeHtml(category.name)}</div>
@@ -82,16 +121,16 @@ function buildPage(category, items) {
 
 async function loadMenu() {
   try {
-    console.log("Loading menu for slug:", slug);
-
     const { data: restaurant, error: rErr } = await sb
       .from("restaurants")
       .select("*")
       .eq("slug", slug)
       .single();
 
-    if (rErr) throw rErr;
-    if (!restaurant) throw new Error("Restaurant not found");
+    if (rErr || !restaurant) {
+      document.body.innerHTML = "Restaurant not found";
+      return;
+    }
 
     restNameEl.textContent = restaurant.name || "Menu";
     restSubEl.textContent = `/${restaurant.slug}`;
@@ -113,27 +152,34 @@ async function loadMenu() {
     if (iErr) throw iErr;
 
     bookEl.innerHTML = "";
-    pages = (categories || []).map(cat => {
-      const catItems = (items || []).filter(i => i.category_id === cat.id);
-      const page = buildPage(cat, catItems);
+    pages = [];
+
+    // Cover first
+    const cover = buildCover(restaurant);
+    bookEl.appendChild(cover);
+    pages.push(cover);
+
+    // Categories after
+    (categories || []).forEach((cat) => {
+      const catItems = (items || []).filter((i) => i.category_id === cat.id);
+      const page = buildCategoryPage(cat, catItems);
       bookEl.appendChild(page);
-      return page;
+      pages.push(page);
     });
 
-    if (!pages.length) {
+    if (pages.length === 1) {
+      // only cover exists
       const p = document.createElement("div");
-      p.className = "page";
+      p.className = "page is-hidden";
       p.innerHTML = `<div class="page-title">Menu</div><div class="footer">No categories yet.</div>`;
       bookEl.appendChild(p);
-      pages = [p];
+      pages.push(p);
     }
 
-    statusLine.textContent = "Ready ✅";
     showPage(0);
   } catch (e) {
     console.error(e);
-    statusLine.textContent = "Error: " + (e?.message || e);
-    bookEl.innerHTML = `<div class="page"><div class="page-title">Error</div><div class="footer">${escapeHtml(e?.message || String(e))}</div></div>`;
+    document.body.innerHTML = "Error loading menu. Check console.";
   }
 }
 
@@ -142,7 +188,13 @@ nextBtn.addEventListener("click", () => showPage(pageIndex + 1));
 
 // Swipe
 let startX = null;
-bookEl.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
+bookEl.addEventListener(
+  "touchstart",
+  (e) => {
+    startX = e.touches[0].clientX;
+  },
+  { passive: true }
+);
 bookEl.addEventListener("touchend", (e) => {
   if (startX == null) return;
   const dx = e.changedTouches[0].clientX - startX;
@@ -153,3 +205,7 @@ bookEl.addEventListener("touchend", (e) => {
 });
 
 loadMenu();
+
+setTimeout(() => {
+  document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+}, 200);
