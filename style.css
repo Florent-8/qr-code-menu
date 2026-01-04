@@ -17,6 +17,17 @@
 
 *{ box-sizing:border-box; }
 
+body[data-theme="coffee"]{
+  --bg1:#f3e7d3;
+  --bg2:#dcc3a1;
+  --paper:#fff7ea;
+  --ink:#2a1a12;
+  --muted:#6b4b3a;
+  --line: rgba(42,26,18,.14);
+  --accent:#5a3a26;
+}
+
+
 body{
   margin:0;
   color:var(--ink);

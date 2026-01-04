@@ -37,6 +37,31 @@ const pageIndicator = document.getElementById("pageIndicator");
 let pages = [];
 let pageIndex = 0;
 
+function applyTheme(r) {
+  if (!r) return;
+
+  // preset name (optional)
+  if (r.theme) document.body.dataset.theme = r.theme;
+
+  const root = document.documentElement;
+
+  const map = {
+    brand_color: "--accent",
+    bg1: "--bg1",
+    bg2: "--bg2",
+    paper: "--paper",
+    ink: "--ink",
+    muted: "--muted",
+    line: "--line",
+  };
+
+  for (const [dbKey, cssVar] of Object.entries(map)) {
+    const val = r[dbKey];
+    if (val) root.style.setProperty(cssVar, val);
+  }
+}
+
+
 function escapeHtml(s) {
   return String(s).replace(
     /[&<>"']/g,
@@ -58,7 +83,7 @@ function setIndicator() {
       (_, i) =>
         `<span style="
       display:inline-block;width:6px;height:6px;border-radius:50%;
-      margin:0 3px;background:${i === pageIndex ? "#111" : "#cfc7b9"}"></span>`
+      margin:0 3px;background:${i === pageIndex ? "var(--accent)" : "rgba(0,0,0,.18)"}"></span>`
     )
     .join("");
 
@@ -134,7 +159,7 @@ async function loadMenu() {
 
     restNameEl.textContent = restaurant.name || "Menu";
     restSubEl.textContent = `/${restaurant.slug}`;
-
+    applyTheme(restaurant);
     const { data: categories, error: cErr } = await sb
       .from("categories")
       .select("*")
