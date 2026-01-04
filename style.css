@@ -34,6 +34,8 @@ body{
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   background:
     radial-gradient(1000px 500px at 50% -15%, #ffffff 0%, var(--bg1) 45%, var(--bg2) 100%);
+  height: 100%;
+  overflow: hidden;
 }
 
 /* subtle vignette / premium feel */
@@ -243,6 +245,7 @@ body:before{
     max-width: none;
     margin: 0;
     padding: 10px 10px 14px;
+    padding-bottom: 0;
   }
 
   .topbar{
@@ -274,6 +277,7 @@ body:before{
   .book{
     height: calc(100dvh - 86px);
     min-height: 520px;
+    max-height: calc(100dvh - 86px);
     perspective: none;
     overflow: hidden; /* keep clipping on mobile too */
   }
