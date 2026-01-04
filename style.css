@@ -17,6 +17,7 @@
 
 *{ box-sizing:border-box; }
 
+/* Optional theme preset */
 body[data-theme="coffee"]{
   --bg1:#f3e7d3;
   --bg2:#dcc3a1;
@@ -26,7 +27,6 @@ body[data-theme="coffee"]{
   --line: rgba(42,26,18,.14);
   --accent:#5a3a26;
 }
-
 
 body{
   margin:0;
@@ -110,6 +110,7 @@ body:before{
   width: 100%;
   height: min(72vh, 640px);
   perspective: 2200px;
+  overflow: hidden; /* ✅ FIX: prevents stacked/bleed look on mobile */
 }
 
 /* Page */
@@ -215,7 +216,7 @@ body:before{
 }
 .item .dots{
   flex:1;
-  border-bottom: 1px solid rgba(0,0,0,.18); /* was dotted */
+  border-bottom: 1px solid rgba(0,0,0,.18); /* solid line */
   transform: translateY(-2px);
   opacity:.9;
 }
@@ -236,7 +237,7 @@ body:before{
    ========================= */
 @media (max-width: 640px) {
 
-  body:before { display:none; } /* vignette often looks weird on phones */
+  body:before { display:none; }
 
   .book-wrap{
     max-width: none;
@@ -254,18 +255,14 @@ body:before{
     backdrop-filter: blur(10px);
   }
 
-  .rest-name{
-    font-size: 24px;
-  }
-  .rest-sub{
-    font-size: 12px;
-  }
+  .rest-name{ font-size: 24px; }
+  .rest-sub{ font-size: 12px; }
 
   .btn{
     padding: 10px 12px;
     font-size: 16px;
     border-radius: 12px;
-    box-shadow: none; /* cleaner + faster */
+    box-shadow: none;
   }
 
   .indicator{
@@ -275,71 +272,54 @@ body:before{
 
   /* Make the menu card fill the screen nicely */
   .book{
-    height: calc(100dvh - 86px); /* adjust if your topbar is taller */
-    min-height: 520px;           /* fallback */
+    height: calc(100dvh - 86px);
+    min-height: 520px;
     perspective: none;
+    overflow: hidden; /* keep clipping on mobile too */
   }
 
-  /* Page becomes a full-height card with internal scroll */
+  /* ✅ HARD OVERRIDE: full-height pages (prevents stacked pages) */
   .page{
-    position: absolute;
-    inset: 0;
+    position: absolute !important;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100%;
+    height: 100%;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
     padding: 16px 14px 14px;
     border-radius: 16px;
     box-shadow: 0 10px 28px rgba(0,0,0,.10);
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
   }
 
-  .page:after{
-    display:none; /* no binding shadow on phones */
-  }
+  .page:after{ display:none; }
 
-  /* Cover looks too empty otherwise */
   .cover{
     padding: 22px 16px;
     min-height: 100%;
   }
-  .cover .title{
-    font-size: 34px;
-  }
-  .cover .subtitle{
-    font-size: 13px;
-  }
+  .cover .title{ font-size: 34px; }
+  .cover .subtitle{ font-size: 13px; }
 
   .page-title{
     font-size: 20px;
     margin: 6px 0 12px;
   }
 
-  /* Items: bigger + easier to scan */
   .item{
     padding: 12px 0;
     gap: 10px;
   }
-  .item .name{
-    font-size: 15px;
-  }
+  .item .name{ font-size: 15px; }
   .item .desc{
     font-size: 13px;
     line-height: 1.35;
     margin-top: 6px;
   }
 
-  /* Leaders + price: keep readable */
   .item .right{
     min-width: 92px;
     gap: 8px;
   }
-  .item .dots{
-    border-bottom: 1px solid rgba(0,0,0,.18); /* solid line, not dots */
-  }
-  .item .price{
-    font-size: 15px;
-  }
-
-  /* iPhone bottom safe area */
-  .page{
-    padding-bottom: calc(14px + env(safe-area-inset-bottom));
-  }
+  .item .price{ font-size: 15px; }
 }
