@@ -61,7 +61,6 @@ function applyTheme(r) {
   }
 }
 
-
 function escapeHtml(s) {
   return String(s).replace(
     /[&<>"']/g,
@@ -83,7 +82,9 @@ function setIndicator() {
       (_, i) =>
         `<span style="
       display:inline-block;width:6px;height:6px;border-radius:50%;
-      margin:0 3px;background:${i === pageIndex ? "var(--accent)" : "rgba(0,0,0,.18)"}"></span>`
+      margin:0 3px;background:${
+        i === pageIndex ? "var(--accent)" : "rgba(0,0,0,.18)"
+      }"></span>`
     )
     .join("");
 
@@ -158,7 +159,17 @@ async function loadMenu() {
     }
 
     restNameEl.textContent = restaurant.name || "Menu";
-    restSubEl.textContent = `/${restaurant.slug}`;
+
+    const welcomes = [
+      "Welcome — enjoy today’s menu",
+      "Sit back and explore our favorites",
+      "Freshly prepared, just for you",
+    ];
+
+    restSubEl.textContent =
+      restaurant.welcome_text ||
+      welcomes[Math.floor(Math.random() * welcomes.length)];
+
     applyTheme(restaurant);
     const { data: categories, error: cErr } = await sb
       .from("categories")
