@@ -12,10 +12,7 @@ if (!slug) {
     <div class="page cover">
       <div class="title">QR Menu</div>
       <div class="subtitle">Open this link with a restaurant code</div>
-      <div class="chip">
-  Please scan the QR code at your table
-</div>
-
+      <div class="chip">Please scan the QR code at your table</div>
     </div>
   `;
   // hide arrows
@@ -95,24 +92,39 @@ function setIndicator() {
 function showPage(i) {
   if (!pages.length) return;
   pageIndex = Math.max(0, Math.min(i, pages.length - 1));
-  pages.forEach((p, idx) => p.classList.toggle("is-hidden", idx !== pageIndex));
+  
+  // ✅ FIX: Properly hide/show pages with visibility and pointer-events
+  pages.forEach((p, idx) => {
+    if (idx === pageIndex) {
+      p.classList.remove("is-hidden");
+      p.style.visibility = "visible";
+      p.style.pointerEvents = "auto";
+      p.style.zIndex = "1";
+    } else {
+      p.classList.add("is-hidden");
+      p.style.visibility = "hidden";
+      p.style.pointerEvents = "none";
+      p.style.zIndex = "0";
+    }
+  });
+  
   setIndicator();
 }
 
 function buildCover(restaurant) {
   const page = document.createElement("div");
-  page.className = "page cover is-hidden";
+  page.className = "page cover";
   page.innerHTML = `
     <div class="title">${escapeHtml(restaurant.name || "Menu")}</div>
     <div class="subtitle">Welcome — swipe or use arrows to browse</div>
-    <div class="chip">Today’s Menu</div>
+    <div class="chip">Today's Menu</div>
   `;
   return page;
 }
 
 function buildCategoryPage(category, items) {
   const page = document.createElement("div");
-  page.className = "page is-hidden";
+  page.className = "page";
 
   const list = items
     .map((it) => {
@@ -161,7 +173,7 @@ async function loadMenu() {
     restNameEl.textContent = restaurant.name || "Menu";
 
     const welcomes = [
-      "Welcome — enjoy today’s menu",
+      "Welcome — enjoy today's menu",
       "Sit back and explore our favorites",
       "Freshly prepared, just for you",
     ];
@@ -190,7 +202,7 @@ async function loadMenu() {
     bookEl.innerHTML = "";
     pages = [];
 
-    // Cover first
+    // Cover first (don't add is-hidden initially)
     const cover = buildCover(restaurant);
     bookEl.appendChild(cover);
     pages.push(cover);
@@ -206,7 +218,7 @@ async function loadMenu() {
     if (pages.length === 1) {
       // only cover exists
       const p = document.createElement("div");
-      p.className = "page is-hidden";
+      p.className = "page";
       p.innerHTML = `<div class="page-title">Menu</div><div class="footer">No categories yet.</div>`;
       bookEl.appendChild(p);
       pages.push(p);
