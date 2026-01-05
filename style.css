@@ -112,7 +112,7 @@ body:before{
   width: 100%;
   height: min(72vh, 640px);
   perspective: 2200px;
-  overflow: hidden; /* ✅ FIX: prevents stacked/bleed look on mobile */
+  overflow: hidden;
 }
 
 /* Page */
@@ -136,7 +136,7 @@ body:before{
 }
 
 .page:after{
-  /* left “binding” shadow */
+  /* left "binding" shadow */
   content:"";
   position:absolute;
   top:0; bottom:0; left:0;
@@ -147,7 +147,11 @@ body:before{
   opacity:.55;
 }
 
-.page.is-hidden{ display:none; }
+.page.is-hidden{ 
+  visibility: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* Cover page */
 .cover{
@@ -218,7 +222,7 @@ body:before{
 }
 .item .dots{
   flex:1;
-  border-bottom: 1px solid rgba(0,0,0,.18); /* solid line */
+  border-bottom: 1px solid rgba(0,0,0,.18);
   transform: translateY(-2px);
   opacity:.9;
 }
@@ -239,33 +243,45 @@ body:before{
    ========================= */
 @media (max-width: 640px) {
 
+  body{
+    background: var(--bg1);
+    height: 100vh;
+    height: 100dvh;
+  }
+
   body:before { display:none; }
 
   .book-wrap{
     max-width: none;
     margin: 0;
-    padding: 10px 10px 14px;
-    padding-bottom: 0;
+    padding: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
   }
 
   .topbar{
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
+    position: relative;
     z-index: 20;
-    padding: 10px 0;
-    margin: 0 0 10px;
-    background: rgba(244,240,231,.88);
-    backdrop-filter: blur(10px);
+    padding: 12px 16px;
+    margin: 0;
+    background: var(--bg1);
+    border-bottom: 1px solid rgba(0,0,0,.08);
   }
 
-  .rest-name{ font-size: 24px; }
+  .rest-name{ 
+    font-size: 22px;
+    line-height: 1.2;
+  }
   .rest-sub{ font-size: 12px; }
 
   .btn{
-    padding: 10px 12px;
+    padding: 8px 12px;
     font-size: 16px;
-    border-radius: 12px;
-    box-shadow: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
   }
 
   .indicator{
@@ -273,57 +289,80 @@ body:before{
     font-size: 12px;
   }
 
-  /* Make the menu card fill the screen nicely */
+  /* Make the menu card fill remaining space */
   .book{
-    height: calc(100dvh - 86px);
-    min-height: 520px;
-    max-height: calc(100dvh - 86px);
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    max-height: none;
     perspective: none;
-    overflow: hidden; /* keep clipping on mobile too */
+    overflow: hidden;
+    padding: 12px;
   }
 
-  /* ✅ HARD OVERRIDE: full-height pages (prevents stacked pages) */
+  /* Full-height pages */
   .page{
     position: absolute !important;
-    top: 0; left: 0; right: 0; bottom: 0;
-    width: 100%;
-    height: 100%;
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    width: auto;
+    height: auto;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 16px 14px 14px;
+    padding: 20px 18px;
     border-radius: 16px;
-    box-shadow: 0 10px 28px rgba(0,0,0,.10);
-    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+    box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
   }
 
   .page:after{ display:none; }
 
   .cover{
-    padding: 22px 16px;
+    padding: 30px 20px;
     min-height: 100%;
   }
-  .cover .title{ font-size: 34px; }
-  .cover .subtitle{ font-size: 13px; }
+  .cover .title{ 
+    font-size: 36px;
+    margin-bottom: 12px;
+  }
+  .cover .subtitle{ 
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .cover .chip{
+    padding: 12px 18px;
+    font-size: 14px;
+  }
 
   .page-title{
-    font-size: 20px;
-    margin: 6px 0 12px;
+    font-size: 24px;
+    margin: 8px 0 18px;
   }
 
   .item{
-    padding: 12px 0;
-    gap: 10px;
+    padding: 14px 0;
+    gap: 12px;
   }
-  .item .name{ font-size: 15px; }
+  .item .name{ 
+    font-size: 16px;
+    line-height: 1.3;
+  }
   .item .desc{
     font-size: 13px;
-    line-height: 1.35;
+    line-height: 1.4;
     margin-top: 6px;
   }
 
   .item .right{
-    min-width: 92px;
+    min-width: 88px;
     gap: 8px;
   }
-  .item .price{ font-size: 15px; }
+  .item .price{ font-size: 16px; }
+
+  .footer{
+    margin-top: 20px;
+    font-size: 12px;
+  }
 }
