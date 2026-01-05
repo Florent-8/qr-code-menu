@@ -93,16 +93,22 @@ function showPage(i) {
   if (!pages.length) return;
   pageIndex = Math.max(0, Math.min(i, pages.length - 1));
   
-  // ✅ FIX: Properly hide/show pages with visibility and pointer-events
+  // ✅ AGGRESSIVE FIX: Completely hide all pages except current
   pages.forEach((p, idx) => {
     if (idx === pageIndex) {
+      // Show active page
       p.classList.remove("is-hidden");
+      p.style.display = "block";
       p.style.visibility = "visible";
+      p.style.opacity = "1";
       p.style.pointerEvents = "auto";
-      p.style.zIndex = "1";
+      p.style.zIndex = "10";
     } else {
+      // Completely hide inactive pages
       p.classList.add("is-hidden");
+      p.style.display = "none";
       p.style.visibility = "hidden";
+      p.style.opacity = "0";
       p.style.pointerEvents = "none";
       p.style.zIndex = "0";
     }
